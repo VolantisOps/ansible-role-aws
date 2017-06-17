@@ -1,0 +1,30 @@
+---
+- name: Install aws-cli
+  pacman: name=aws-cli state=present
+
+- name: Ensure config directory exists
+  file:
+    path: "~{{ item }}/.aws"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0755
+  with_items: "{{ aws_users }}"
+
+- name: Copy aws configuration
+  template:
+    src: config.j2
+    dest: "~{{ item }}/.aws/config"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0600
+  with_items: "{{ aws_users }}"
+
+- name: Copy aws credentials
+  template:
+    src: credentials.j2
+    dest: "~{{ item }}/.aws/credentials"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0600
+  with_items: "{{ aws_users }}"
